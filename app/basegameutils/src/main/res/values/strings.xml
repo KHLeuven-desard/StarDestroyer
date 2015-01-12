@@ -9,6 +9,15 @@
     <string name="gamehelper_license_failed">License check failed.</string>
     <string name="gamehelper_unknown_error">Unknown error.</string>
     <string name="app_misconfigured">Application misconfigured</string>
-    <string name="sign_in_failed">Sign in failed</string>
+    <string name="sign_in_failed">Sign in failed. Check your connection.</string>
     <string name="license_failed">Invalid license</string>
+
+    <string name="app_id">368778520752</string>
+    <string name="achievement_lowballing">CgkIsNGm590KEAIQAQ</string>
+    <string name="achievement_arrogancy">CgkIsNGm590KEAIQAg</string>
+    <string name="achievement_humbled">CgkIsNGm590KEAIQAw</string>
+    <string name="achievement_leet">CgkIsNGm590KEAIQBA</string>
+    <string name="achievement_super_bored">CgkIsNGm590KEAIQBQ</string>
+    <string name="achievement_generally_bored">CgkIsNGm590KEAIQBg</string>
+    <string name="leaderboard_max_score">CgkIsNGm590KEAIQBw</string>
 </resources>

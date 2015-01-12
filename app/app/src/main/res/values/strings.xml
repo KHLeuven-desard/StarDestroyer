@@ -3,7 +3,7 @@
 
     <string name="app_name">StarDestroyer</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Leaderbord</string>
     <string name="title_activity_welcome">StarDestroyer</string>
     <string name="title_activity_game">StarDestroyer</string>
     <string name="title_activity_settings">StarDestroyer</string>
@@ -13,18 +13,26 @@
     <string name="signin_other_error">Strange error occurred</string>
     <string name="your_progress_will_be_uploaded">Progress will upload!</string>
     <string name="you_are_signed_in">Hello!</string>
-    <string name="app_id">137504453147</string>
+    <!--<string name="client_id">137504453147-k06p5884jh9n2310lmm789v6gb8ct00e.apps.googleusercontent.com</string>-->
     <string name="title_activity_game_over">StarDestroyer</string>
+
     <string name="achievement_leet_toast_text">1337!! HAXXOR</string>
     <string name="achievement_humble_toast_text">You really suck at this.</string>
     <string name="achievement_arrogant_toast_text">It\'s over 9000!!!</string>
-    <string name="achievement_prime_toast_text">At least you tried...</string>
-    <string name="achievement_low">Lowballing</string>
-    <string name="achievement_arrogant">Arrogancy</string>
-    <string name="achievement_humble">Humbled</string>
-    <string name="achievement_leet">LEET</string>
-    <string name="achievement_really_bored">Super bored!</string>
-    <string name="achievement_bored">Generally Bored</string>
-    <string name="leaderboard_score">score</string>
+    <string name="achievement_low_toast_text">At least you tried…</string>
+    <string name="achievement_generally_bored_toast_text">You seem bored!</string>
+    <!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+    <string name="app_id">866963295319</string>
+    <string name="leaderboard_max_score">CgkI15io2J0ZEAIQBg</string>
 
+    <string name="achievement_lowballing">CgkI15io2J0ZEAIQAQ</string>
+    <string name="achievement_arrogancy">CgkI15io2J0ZEAIQAg</string>
+    <string name="achievement_humbled">CgkI15io2J0ZEAIQAw</string>
+    <string name="achievement_leet">CgkI15io2J0ZEAIQBA</string>
+    <string name="achievement_super_bored">CgkI15io2J0ZEAIQBQ</string>
+    <string name="achievements">Achievements</string>
+    <string name="leaderboards">Leaderboards</string>
 </resources>

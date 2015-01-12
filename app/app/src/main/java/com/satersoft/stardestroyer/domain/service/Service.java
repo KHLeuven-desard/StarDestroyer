@@ -109,4 +109,9 @@ public class Service implements IService, Serializable {
     public void addObserverToGame(Observer o) {
         game.registerObserver(o);
     }
+
+    @Override
+    public void removeObserverFromGame(Observer o) {
+        game.removeObserver(o);
+    }
 }

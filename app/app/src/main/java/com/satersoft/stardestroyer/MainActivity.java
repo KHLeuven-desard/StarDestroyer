@@ -3,8 +3,10 @@ package com.satersoft.stardestroyer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -17,12 +19,16 @@ import com.satersoft.example.games.basegameutils.BaseGameUtils;
 import com.satersoft.stardestroyer.domain.InfoWrapper;
 import com.satersoft.stardestroyer.ui.FullScreenActivity;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 
 public class MainActivity extends FullScreenActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     // Client used to interact with Google APIs
     private GoogleApiClient googleAPIClient;
 
     public static final int GAME_RESULT = 96969;
+    public static boolean isLoggingIn = false;
 
     // achievements and scores we're pending to push to the cloud
     // (waiting for the user to sign in, for instance)
@@ -42,9 +48,9 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
     private static final int RC_UNUSED = 5001;
     private static final int RC_SIGN_IN = 9001;
 
-    // tag for debug logging
-    final boolean ENABLE_DEBUG = true;
-    final String TAG = "SD";
+    private ImageView light, medium, heavy;
+    TextView signedIn;
+    Button signIn, btnAchieve, btnLeader;
 
     private InfoWrapper info;
 
@@ -55,7 +61,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         info = (InfoWrapper) getIntent().getExtras().get("info");
         if(info.score >= 0) {
             // check score!
-            Log.e("SCORED", "Score: " + info.score);
+            //Log.e("SCORED", "Score: " + info.score);
             onEnteredScore(info.score);
             info.score = -1;
         }
@@ -92,8 +98,27 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         // we don't deal with that for code simplicity.
 
         // load outbox from file
-        //mOutbox.loadLocal(this);
+        mOutbox.loadLocal(this);
 
+        light = (ImageView)findViewById(R.id.imgLight);
+        medium = (ImageView)findViewById(R.id.imgMedium);
+        heavy = (ImageView)findViewById(R.id.imgHeavy);
+
+        signedIn = (TextView)findViewById(R.id.signed_in_bar);
+        signIn = (Button)findViewById(R.id.btnSign);
+        btnAchieve = (Button) findViewById(R.id.btnAchievements);
+        btnLeader = (Button) findViewById(R.id.btnLeaderboards);
+
+        medium.setBackgroundResource(R.drawable.textlines);
+        light.setBackgroundColor(0x00000000);
+        heavy.setBackgroundColor(0x00000000);
+
+        if(isSignedIn()) {
+
+        } else {
+            btnAchieve.setEnabled(false);
+            btnLeader.setEnabled(false);
+        }
     }
 
     private boolean isSignedIn() {
@@ -103,30 +128,52 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart(): connecting");
-        /*if(checkGPServices()) {
+        //Log.d("X", "onStart(): connecting");
+        if(isLoggingIn && checkGPServices()) {
             if (!googleAPIClient.isConnecting() &&
                     !googleAPIClient.isConnected()) {
                 googleAPIClient.connect();
             }
-        }*/
+        }
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop(): disconnecting");
+        //Log.d("X", "onStop(): disconnecting");
         if (googleAPIClient.isConnected()) {
             googleAPIClient.disconnect();
         }
     }
 
-    public void onStartGameRequested(boolean hardMode) {
-        startGame(hardMode);
+    public void selectShip(View v) {
+        switch(v.getId()) {
+            case R.id.imgLight:
+                info.selectedShip = new Integer(0);
+                light.setBackgroundResource(R.drawable.textlines);
+                medium.setBackgroundColor(0x00000000);
+                heavy.setBackgroundColor(0x00000000);
+                //Toast.makeText(this.getApplicationContext(), "Light selected", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.imgMedium:
+                info.selectedShip = new Integer(1);
+                medium.setBackgroundResource(R.drawable.textlines);
+                light.setBackgroundColor(0x00000000);
+                heavy.setBackgroundColor(0x00000000);
+                //Toast.makeText(this.getApplicationContext(), "Medium selected", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.imgHeavy:
+                info.selectedShip = new Integer(2);
+                heavy.setBackgroundResource(R.drawable.textlines);
+                light.setBackgroundColor(0x00000000);
+                medium.setBackgroundColor(0x00000000);
+                //Toast.makeText(this.getApplicationContext(), "Heavy selected", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
-    public void onShowAchievementsRequested() {
+    public void onShowAchievementsRequested(View v) {
         if (isSignedIn()) {
             startActivityForResult(Games.Achievements.getAchievementsIntent(googleAPIClient),
                     RC_UNUSED);
@@ -135,7 +182,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         }
     }
 
-    public void onShowLeaderboardsRequested() {
+    public void onShowLeaderboardsRequested(View v) {
         if (isSignedIn()) {
             startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(googleAPIClient),
                     RC_UNUSED);
@@ -159,10 +206,10 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
     @Override
     public void onRestoreInstanceState(Bundle saved) {
         info = (InfoWrapper) getIntent().getExtras().get("info");
-        Log.e("RESTORRREEE", " x");
+        //Log.e("RESTORRREEE", " x");
         if(info.score >= 0) {
             // check score!
-            Log.e("SCORED", "Score: " + info.score);
+            //Log.e("SCORED", "Score: " + info.score);
             onEnteredScore(info.score);
             info.score = -1;
         }
@@ -192,17 +239,13 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         finish();
     }
 
-    public void openSettings(View v) {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-    }
-
     public void signGoogle(View v) {
         if(checkGPServices()) {
             if (!googleAPIClient.isConnecting() &&
                     !googleAPIClient.isConnected()) {
                 googleAPIClient.connect();
                 setShowSignIn(false);
+                isLoggingIn = true;
             }
         }
     }
@@ -239,7 +282,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         // achievement.
         if (finalScore > 10) {
             mOutbox.mLowAchievement = true;
-            achievementToast(getString(R.string.achievement_prime_toast_text));
+            achievementToast(getString(R.string.achievement_low_toast_text));
         }
         if (requestedScore == 9999) {
             mOutbox.mArrogantAchievement = true;
@@ -249,13 +292,13 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
             mOutbox.mHumbleAchievement = true;
             achievementToast(getString(R.string.achievement_humble_toast_text));
         }
-        if (finalScore == 1337) {
+        if (finalScore >= 137) {
             mOutbox.mLeetAchievement = true;
             achievementToast(getString(R.string.achievement_leet_toast_text));
         }
-        if(mOutbox.mBoredSteps > 5) {
+        if(mOutbox.mBoredSteps > 10) {
             mOutbox.mBoredAchievement = true;
-            achievementToast(getString(R.string.achievement_leet_toast_text));
+            achievementToast(getString(R.string.achievement_generally_bored_toast_text));
         }
         mOutbox.mBoredSteps++;
     }
@@ -286,15 +329,15 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
             return;
         }
         if (mOutbox.mLowAchievement) {
-            Games.Achievements.unlock(googleAPIClient, getString(R.string.achievement_low));
+            Games.Achievements.unlock(googleAPIClient, getString(R.string.achievement_lowballing));
             mOutbox.mLowAchievement = false;
         }
         if (mOutbox.mArrogantAchievement) {
-            Games.Achievements.unlock(googleAPIClient, getString(R.string.achievement_arrogant));
+            Games.Achievements.unlock(googleAPIClient, getString(R.string.achievement_arrogancy));
             mOutbox.mArrogantAchievement = false;
         }
         if (mOutbox.mHumbleAchievement) {
-            Games.Achievements.unlock(googleAPIClient, getString(R.string.achievement_humble));
+            Games.Achievements.unlock(googleAPIClient, getString(R.string.achievement_humbled));
             mOutbox.mHumbleAchievement = false;
         }
         if (mOutbox.mLeetAchievement) {
@@ -302,13 +345,11 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
             mOutbox.mLeetAchievement = false;
         }
         if (mOutbox.mBoredSteps > 0) {
-            Games.Achievements.increment(googleAPIClient, getString(R.string.achievement_really_bored),
-                    mOutbox.mBoredSteps);
-            Games.Achievements.increment(googleAPIClient, getString(R.string.achievement_bored),
+            Games.Achievements.increment(googleAPIClient, getString(R.string.achievement_super_bored),
                     mOutbox.mBoredSteps);
         }
         if (mOutbox.score >= 0) {
-            Games.Leaderboards.submitScore(googleAPIClient, getString(R.string.leaderboard_score),
+            Games.Leaderboards.submitScore(googleAPIClient, getString(R.string.leaderboard_max_score),
                     mOutbox.score);
             mOutbox.score = -1;
         }
@@ -345,7 +386,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
                 info = (InfoWrapper) intent.getExtras().get("info");
                 if(info.score >= 0) {
                     // check score!
-                    Log.e("SCORED", "Score: " + info.score);
+                    //Log.e("SCORED", "Score: " + info.score);
                     info.score = -1;
                 }
                 // TODO: achievements!
@@ -355,7 +396,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(TAG, "onConnected(): connected to Google APIs");
+        //Log.d("X", "onConnected(): connected to Google APIs");
         // Show sign-out button on main menu
         //mMainMenuFragment.setShowSignInButton(false);
 
@@ -366,12 +407,18 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         Player p = Games.Players.getCurrentPlayer(googleAPIClient);
         String displayName;
         if (p == null) {
-            Log.w(TAG, "mGamesClient.getCurrentPlayer() is NULL!");
+            //Log.w("X", "mGamesClient.getCurrentPlayer() is NULL!");
             displayName = "???";
         } else {
             displayName = p.getDisplayName();
         }
         //mMainMenuFragment.setGreeting("Hello, " + displayName);
+        signedIn.setVisibility(View.VISIBLE);
+        signedIn.setText("Hello, " + displayName);
+        signIn.setVisibility(View.GONE);
+
+        btnAchieve.setEnabled(true);
+        btnLeader.setEnabled(true);
 
 
         // if we have accomplishments to push, push them
@@ -384,7 +431,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended(): attempting to connect");
+        //Log.d("X", "onConnectionSuspended(): attempting to connect");
         if (!googleAPIClient.isConnecting() &&
                 !googleAPIClient.isConnected()) {
             googleAPIClient.connect();
@@ -393,9 +440,9 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed(): attempting to resolve");
+        //Log.d("X", "onConnectionFailed(): attempting to resolve");
         if (mResolvingConnectionFailure) {
-            Log.d(TAG, "onConnectionFailed(): already resolving");
+            //Log.d("X", "onConnectionFailed(): already resolving");
             return;
         }
 
@@ -413,6 +460,8 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         /*mMainMenuFragment.setGreeting(getString(R.string.signed_out_greeting));
         mMainMenuFragment.setShowSignInButton(true);
         mWinFragment.setShowSignInButton(true);*/
+        signedIn.setVisibility(View.GONE);
+        signIn.setVisibility(View.VISIBLE);
     }
 
     public void onSignInButtonClicked() {
@@ -439,13 +488,14 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
     }
 
     public void updateUI() {
-        findViewById(R.id.btnSign).setVisibility(
+        signIn.setVisibility(
                 showSignIn() ? View.VISIBLE : View.GONE);
-        findViewById(R.id.signed_in_bar).setVisibility(
+        signedIn.setVisibility(
                 showSignIn() ? View.GONE : View.VISIBLE);
     }
 
     class AccomplishmentsOutbox {
+        private static final String filename = "accbox";
         boolean mLowAchievement = false;
         boolean mHumbleAchievement = false;
         boolean mLeetAchievement = false;
@@ -460,15 +510,65 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
         }
 
         public void saveLocal(Context ctx) {
-            /* TODO: This is left as an exercise. To make it more difficult to cheat,
-             * this data should be stored in an encrypted file! And remember not to
-             * expose your encryption key (obfuscate it by building it from bits and
-             * pieces and/or XORing with another string, for instance). */
+            FileOutputStream outputStream;
+            try {
+                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                outputStream.write(("" + mLowAchievement + "\n").getBytes());
+                outputStream.write(("" + mHumbleAchievement + "\n").getBytes());
+                outputStream.write(("" + mLeetAchievement + "\n").getBytes());
+                outputStream.write(("" + mArrogantAchievement + "\n").getBytes());
+                outputStream.write(("" + mBoredAchievement + "\n").getBytes());
+                outputStream.write(("" + mBoredSteps + "\n").getBytes());
+                outputStream.write(("" + score).getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public void loadLocal(Context ctx) {
-            /* TODO: This is left as an exercise. Write code here that loads data
-             * from the file you wrote in saveLocal(). */
+            try {
+                FileInputStream fin = openFileInput(filename);
+                int c;
+                String temp="";
+                while( (c = fin.read()) != -1){
+                    temp = temp + Character.toString((char)c);
+                }
+                fin.close();
+
+                // parse temp
+                String[] lines = temp.split("\\r?\\n");
+                c = 0;
+                for(String line : lines) {
+                    switch(c){
+                        case 0:
+                            mLowAchievement = Boolean.parseBoolean(line);
+                            break;
+                        case 1:
+                            mHumbleAchievement = Boolean.parseBoolean(line);
+                            break;
+                        case 2:
+                            mLeetAchievement = Boolean.parseBoolean(line);
+                            break;
+                        case 3:
+                            mArrogantAchievement = Boolean.parseBoolean(line);
+                            break;
+                        case 4:
+                            mBoredAchievement = Boolean.parseBoolean(line);
+                            break;
+                        case 5:
+                            mBoredSteps = Integer.parseInt(line);
+                            break;
+                        case 6:
+                            score = Integer.parseInt(line);
+                            break;
+                    }
+                    ++c;
+                }
+            } catch (Exception e) {
+                //e.printStackTrace();
+                // file doesn't exist
+            }
         }
     }
 }

@@ -1,7 +1,5 @@
 package com.satersoft.stardestroyer.domain.model;
 
-import android.util.Log;
-
 import com.satersoft.stardestroyer.domain.chronometer.StartableObject;
 import com.satersoft.stardestroyer.domain.model.units.EnemyShip;
 import com.satersoft.stardestroyer.domain.model.units.EntityFactory;
@@ -104,6 +102,7 @@ public class StarGame extends StartableObject implements Subject, Observer, Seri
 	public List<Projectile> getProjectiles() {
 		return cloneProjectileList(projectiles);
 	}
+
 	public Ship getPlayer() {
 		return ((PlayerShip)this.player).clone();
 	}
@@ -227,7 +226,7 @@ public class StarGame extends StartableObject implements Subject, Observer, Seri
 	    	Ship enemy =  ei.next();
 			if (enemy.getY() > this.getHeight()){
 				ei.remove();
-				enemies.remove(enemy);
+				//enemies.remove(enemy);
 			}
 		}
 	}
@@ -260,7 +259,7 @@ public class StarGame extends StartableObject implements Subject, Observer, Seri
 			if (player.hitBy(projectile.getX(), projectile.getY(),projectile.getWidth(), projectile.getHeight())){
 				player.assignDamage(projectile.getStrength());
 				pi.remove();
-				projectiles.remove(projectile);
+				//projectiles.remove(projectile);
 			}
 			}
 		}
@@ -277,7 +276,7 @@ public class StarGame extends StartableObject implements Subject, Observer, Seri
 					enemy.assignDamage(projectile.getStrength());
 
 					pi.remove();
-					projectiles.remove(projectile);
+					//projectiles.remove(projectile);
 				}
 				}
 			}
@@ -296,7 +295,7 @@ public class StarGame extends StartableObject implements Subject, Observer, Seri
 				EnemyShip e = (EnemyShip)enemy;
 				score +=e.getScore();
 				ei.remove();
-				enemies.remove(enemy);
+				//enemies.remove(enemy);
 				amountEnemies--;
 			}
 			}

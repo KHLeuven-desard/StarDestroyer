@@ -2,7 +2,6 @@ package com.satersoft.stardestroyer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,7 +19,6 @@ public class GameOverActivity extends FullScreenActivity {
         info = (InfoWrapper) getIntent().getExtras().get("info");
 
         TextView score = ((TextView)findViewById(R.id.txtScore));
-        Log.e("textview", "TV: " + score);
         score.setText("" + info.score);
 
 

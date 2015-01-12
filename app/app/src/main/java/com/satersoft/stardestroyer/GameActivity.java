@@ -7,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
@@ -25,12 +24,79 @@ import java.util.Set;
 
 public class GameActivity extends FullScreenActivity implements SensorEventListener, Observer {
     private CustomSurface customSurface;
-
     private InfoWrapper info;
-
     private IService service;
-
     private SensorManager sensorManager;
+    public static final String STATE_SERVICE = "service", INFO = "info";
+
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        this.service = (Service) savedInstanceState.getSerializable(STATE_SERVICE);
+        try {
+            service.resumeGame();
+        } catch (KHLeuvenMobileException ex){
+            // misschien hier het spel restarten?
+        }
+        update();
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        try{
+            this.service.pauseGame();
+        } catch (KHLeuvenMobileException ex){
+            // misschien hier het spel restarten?
+        }
+        savedInstanceState.putSerializable(STATE_SERVICE, this.service);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+    /*
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        service = (IService) savedInstanceState.getSerializable(STATE_SERVICE);
+        info = (InfoWrapper)savedInstanceState.getSerializable(INFO);
+        registerSensorListener();
+        try {
+            service.resumeGame();
+        } catch (KHLeuvenMobileException ex){
+            // misschien hier het spel restarten?
+        }
+        update();
+
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        try{
+            service.pauseGame();
+        } catch (KHLeuvenMobileException ex){
+            // misschien hier het spel restarten?
+        }
+        savedInstanceState.putSerializable(STATE_SERVICE, this.service);
+        savedInstanceState.putSerializable(INFO, this.info);
+        unregisterSensorListener();
+        super.onSaveInstanceState(savedInstanceState);
+
+    }*/
+
+    private String shipToString(int choice) {
+        String ship = "Medium";
+
+        switch(choice){
+            case 0:
+                ship = "Light";
+                break;
+            case 1:
+                ship = "Medium";
+                break;
+            case 2:
+                ship = "Heavy";
+                break;
+        }
+
+        return ship;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +107,15 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        service = new Service("Medium", info.file, getApplicationContext());
-        service.addObserverToGame(this);
+        service = new Service(shipToString(info.selectedShip), info.file, getApplicationContext());
+
 
         // We create our Surfaceview for our OpenGL here.
         customSurface = new CustomSurface(this);
         customSurface.setService(service);
         customSurface.setImages(info.bitHash);
 
-        service.startGame();
+        //service.startGame();
 
         // Set our view.
         setContentView(R.layout.activity_game);
@@ -66,13 +132,19 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
     protected void onPause() {
         super.onPause();
         //customSurface.onPause();
+        try {
+            service.removeObserverFromGame(this);
+            service.pauseGame();
+
+        } catch (KHLeuvenMobileException e) {
+            e.printStackTrace();
+        }
         unregisterSensorListener();
     }
 
     private void gameOver() {
         if(service != null && service.isGameOver()) {
             int score = service.getScore();
-            Log.e("GAMEOVER", "ITS FUCKING OVER (score: " + score + ")");
             Intent intent = new Intent(this, GameOverActivity.class);
             info.score = new Integer(score);
             try {
@@ -90,6 +162,15 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
     protected void onResume() {
         super.onResume();
         //customSurface.onResume();
+        try {
+            service.addObserverToGame(this);
+            customSurface.setService(service);
+            customSurface.setImages(info.bitHash);
+            service.resumeGame();
+
+        } catch (KHLeuvenMobileException e) {
+            e.printStackTrace();
+        }
         registerSensorListener();
     }
 
@@ -178,5 +259,6 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
     @Override
     public void update() {
         gameOver();
+        customSurface.update();
     }
 }
