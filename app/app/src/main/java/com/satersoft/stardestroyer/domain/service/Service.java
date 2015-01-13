@@ -81,7 +81,13 @@ public class Service implements IService, Serializable {
 	public int getScore() {
 		return game.getScore();
 	}
-	@Override
+
+    @Override
+    public int getEnemyCount() {
+        return game.getAmountOfEnemies();
+    }
+
+    @Override
 	public boolean isGameOver() {
 		return game.isGameOver();
 	}
@@ -113,5 +119,10 @@ public class Service implements IService, Serializable {
     @Override
     public void removeObserverFromGame(Observer o) {
         game.removeObserver(o);
+    }
+
+    @Override
+    public boolean getVictor() {
+        return game.isVictor();
     }
 }

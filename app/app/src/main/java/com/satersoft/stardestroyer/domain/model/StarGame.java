@@ -146,7 +146,7 @@ public class StarGame extends StartableObject implements Subject, Observer, Seri
 			}
 		}
 		}
-		x = (int) (Math.random() * this.getWidth());
+		x = (int) (Math.random() * (this.getWidth()-30))+30;
 		y = -10;
 		enemy = factory.createShip(false, type, x, y);
 		enemies.add(enemy);

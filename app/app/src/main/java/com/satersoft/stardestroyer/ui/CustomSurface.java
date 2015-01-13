@@ -53,6 +53,7 @@ public class CustomSurface extends SurfaceView /*implements Observer*/ {
                     Ship player = service.getPlayer();
                     int score = service.getScore();
                     int armor = service.getLives();
+                    int enemyCount = service.getEnemyCount();
 
                     if(enemies != null) {
                         for(Ship enemy : enemies) {
@@ -76,6 +77,7 @@ public class CustomSurface extends SurfaceView /*implements Observer*/ {
                     paint.setTextSize(72);
                     canvas.drawText("Armor: " + armor, 60, 60, paint);
                     canvas.drawText("Score: " + score, 60, 160, paint);
+                    canvas.drawText("Enemies: " + enemyCount, 60, 260, paint);
                     //Log.e("LIVES", "" + service.getLives());
                 }
             /*}});*/

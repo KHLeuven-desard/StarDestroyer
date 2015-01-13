@@ -22,6 +22,10 @@ public class GameOverActivity extends FullScreenActivity {
         score.setText("" + info.score);
 
 
+        TextView loseLabel = (TextView) findViewById(R.id.txtLose);
+        if(info.victor)
+            loseLabel.setText("You win!!!");
+
         //backToMain();
     }
 

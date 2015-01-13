@@ -15,11 +15,9 @@
         android:layout_marginBottom="20dp"/>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="142dp"
         android:layout_marginLeft="70dp">
 
@@ -27,18 +25,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Score:"
-            android:id="@+id/txtLabelScore"
+            android:text="@string/lost"
+            android:id="@+id/txtLose"
+            android:layout_marginBottom="15dp"
+            android:textSize="35dp"
             android:textColor="#ffffff"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="-1"
-            android:id="@+id/txtScore"
-            android:textColor="#ffffff"
-            android:layout_marginLeft="15dp"/>
-    </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Score:"
+                android:id="@+id/txtLabelScore"
+                android:textColor="#ffffff"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="-1"
+                android:id="@+id/txtScore"
+                android:textColor="#ffffff"
+                android:layout_marginLeft="15dp"/>
+        </LinearLayout>
+        </LinearLayout>
 
 </RelativeLayout>

@@ -25,7 +25,7 @@ import java.io.FileOutputStream;
 
 public class MainActivity extends FullScreenActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     // Client used to interact with Google APIs
-    private GoogleApiClient googleAPIClient;
+    private static GoogleApiClient googleAPIClient;
 
     public static final int GAME_RESULT = 96969;
     public static boolean isLoggingIn = false;
@@ -235,6 +235,7 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
     public void playGame(View v) {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("info", info);
+
         startActivity(intent);
         finish();
     }
@@ -248,17 +249,6 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
                 isLoggingIn = true;
             }
         }
-    }
-
-    /**
-     * Start gameplay. This means updating some status variables and switching
-     * to the "gameplay" screen (the screen where the user types the score they want).
-     *
-     * @param hardMode whether to start gameplay in "hard mode".
-     */
-    void startGame(boolean hardMode) {
-        //mHardMode = hardMode;
-        //switchToFragment(mGameplayFragment);
     }
 
     public void onEnteredScore(int requestedScore) {
@@ -277,30 +267,31 @@ public class MainActivity extends FullScreenActivity implements GoogleApiClient.
      * @param requestedScore the score the user requested.
      * @param finalScore the score the user got.
      */
-    void checkForAchievements(int requestedScore, int finalScore) {
+    public void checkForAchievements(int requestedScore, int finalScore) {
         // Check if each condition is met; if so, unlock the corresponding
         // achievement.
-        if (finalScore > 10) {
+        if (requestedScore > 10 && !mOutbox.mLowAchievement) {
             mOutbox.mLowAchievement = true;
             achievementToast(getString(R.string.achievement_low_toast_text));
         }
-        if (requestedScore == 9999) {
+        if (requestedScore == 9999 && !mOutbox.mArrogantAchievement) {
             mOutbox.mArrogantAchievement = true;
             achievementToast(getString(R.string.achievement_arrogant_toast_text));
         }
-        if (requestedScore == 0) {
+        if (requestedScore == 0 && !mOutbox.mHumbleAchievement) {
             mOutbox.mHumbleAchievement = true;
             achievementToast(getString(R.string.achievement_humble_toast_text));
         }
-        if (finalScore >= 137) {
+        if (requestedScore >= 137 && !mOutbox.mLeetAchievement) {
             mOutbox.mLeetAchievement = true;
             achievementToast(getString(R.string.achievement_leet_toast_text));
         }
-        if(mOutbox.mBoredSteps > 10) {
+        if(mOutbox.mBoredSteps > 10 && !mOutbox.mBoredAchievement && finalScore >= requestedScore) {
             mOutbox.mBoredAchievement = true;
             achievementToast(getString(R.string.achievement_generally_bored_toast_text));
         }
-        mOutbox.mBoredSteps++;
+        if(finalScore >= requestedScore)
+            mOutbox.mBoredSteps++;
     }
 
     void unlockAchievement(int achievementId, String fallbackString) {

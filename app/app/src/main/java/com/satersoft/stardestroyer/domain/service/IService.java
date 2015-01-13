@@ -17,6 +17,7 @@ public interface IService extends Serializable {
 	void startGame();
 	int getLives();
 	int getScore();
+    int getEnemyCount();
 	boolean isGameOver();
 	boolean isVictory();
 	List<Projectile> getProjectiles();
@@ -29,5 +30,7 @@ public interface IService extends Serializable {
     void addObserverToGame(Observer o);
 
     void removeObserverFromGame(Observer o);
+
+    boolean getVictor();
 }
 

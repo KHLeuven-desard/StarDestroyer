@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class GameBuilder implements Serializable{
 
 	private static final long serialVersionUID = -4551540335954655613L;
-	private int amountEnemies = 30;
+	private int amountEnemies = 50;
 	private int lives = 6;
 	private int fieldHeight = 500;
 	private int fieldWidth = 400;

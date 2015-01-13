@@ -35,4 +35,5 @@ Save this file as res/values/games-ids.xml in your project.
     <string name="achievement_super_bored">CgkI15io2J0ZEAIQBQ</string>
     <string name="achievements">Achievements</string>
     <string name="leaderboards">Leaderboards</string>
+    <string name="lost">You lose...</string>
 </resources>

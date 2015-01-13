@@ -25,19 +25,20 @@ import java.util.Set;
 public class GameActivity extends FullScreenActivity implements SensorEventListener, Observer {
     private CustomSurface customSurface;
     private InfoWrapper info;
-    private IService service;
+    private transient IService service;
     private SensorManager sensorManager;
-    public static final String STATE_SERVICE = "service", INFO = "info";
-
+    public static final String STATE_SERVICE = "service";
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState){
         super.onRestoreInstanceState(savedInstanceState);
-        this.service = (Service) savedInstanceState.getSerializable(STATE_SERVICE);
+
         try {
+            //this.service = (Service) savedInstanceState.getSerializable(STATE_SERVICE);
             service.resumeGame();
-        } catch (KHLeuvenMobileException ex){
+        } catch (Exception ex){
             // misschien hier het spel restarten?
+            //service.startGame();
         }
         update();
     }
@@ -47,8 +48,11 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
             this.service.pauseGame();
         } catch (KHLeuvenMobileException ex){
             // misschien hier het spel restarten?
+            //service.startGame();
         }
-        savedInstanceState.putSerializable(STATE_SERVICE, this.service);
+        try {
+            //savedInstanceState.putSerializable(STATE_SERVICE, this.service);
+        } catch(Exception e) {}
         super.onSaveInstanceState(savedInstanceState);
     }
     /*
@@ -109,7 +113,6 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
 
         service = new Service(shipToString(info.selectedShip), info.file, getApplicationContext());
 
-
         // We create our Surfaceview for our OpenGL here.
         customSurface = new CustomSurface(this);
         customSurface.setService(service);
@@ -135,9 +138,7 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
         try {
             service.removeObserverFromGame(this);
             service.pauseGame();
-
         } catch (KHLeuvenMobileException e) {
-            e.printStackTrace();
         }
         unregisterSensorListener();
     }
@@ -147,10 +148,10 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
             int score = service.getScore();
             Intent intent = new Intent(this, GameOverActivity.class);
             info.score = new Integer(score);
+            info.victor = service.getVictor();
             try {
                 service.pauseGame();
             } catch (KHLeuvenMobileException e) {
-                e.printStackTrace();
             }
             intent.putExtra("info", info);
             startActivity(intent);
@@ -169,7 +170,7 @@ public class GameActivity extends FullScreenActivity implements SensorEventListe
             service.resumeGame();
 
         } catch (KHLeuvenMobileException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         registerSensorListener();
     }

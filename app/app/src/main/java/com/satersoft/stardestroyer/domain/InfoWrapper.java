@@ -13,4 +13,5 @@ public class InfoWrapper implements Serializable {
     public Map<Integer, SerialBitmap> bitHash = new HashMap<Integer, SerialBitmap>();
     public Integer score = -1;
     public Integer selectedShip = -1;
+    public Boolean victor = new Boolean(false);
 }
